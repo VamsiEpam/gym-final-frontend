@@ -33,6 +33,7 @@ export class TraineeNavbarComponent {
   }
 
   signOut() {
+    localStorage.clear()
     this.traineeProfile = new TraineeDetailsDTO();
     this.router.navigate(['/home'])
   }

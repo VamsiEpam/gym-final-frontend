@@ -44,6 +44,7 @@ export class TrainerNavbarComponent implements OnInit{
   }
 
   signOut() {
+    localStorage.clear()
     this.trainerProfile = new TrainerDetailsDTO();
     this.router.navigate(['/home'])
   }

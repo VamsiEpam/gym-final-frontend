@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {TrainerDetailsDTO} from "../../dto/TrainerDetailsDTO";
 import {ActivatedRoute, Router} from "@angular/router";
+import {UserProfileService} from "../../shared/user-profile.service";
 export interface TrainerInfo {
   specialization: string;
   firstname: string;
@@ -23,13 +24,14 @@ export class MyaccountTrainerProfileComponent {
 
   trainerProfile : TrainerDetailsDTO = new TrainerDetailsDTO();
 
-  constructor(private route: ActivatedRoute, private router: Router) {
+  constructor(private route: ActivatedRoute, private router: Router, private userProfileService : UserProfileService) {
   }
 
 
   ngOnInit() {
     const state = window.history.state;
     this.trainerProfile = state.trainerProfile;
+    this.userProfileService.setTrainerProfile(this.trainerProfile);
     this.trainerProfile.traineeDetailsList.forEach(value => {
       this.dataSource.push({specialization : value.specialization, firstname : value.firstName, lastname : value.lastName})
     })

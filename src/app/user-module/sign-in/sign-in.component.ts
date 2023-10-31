@@ -9,6 +9,7 @@ import {TraineeService} from "../../service/trainee.service";
 import {TraineeDetailsDTO} from "../../dto/TraineeDetailsDTO";
 import {TrainerDetailsDTO} from "../../dto/TrainerDetailsDTO";
 import {SnackBarService} from "../../service/snack-bar.service";
+import {GuardService} from "../../shared/GuardService";
 
 @Component({
   selector: 'app-sign-in',
@@ -25,11 +26,14 @@ export class SignInComponent {
   loginForm: any;
   selectedUserType: string = 'trainee';
 
-  constructor(private snackBarService : SnackBarService, private router: Router, private signInService: SignInService, private trainerService : TrainerService, private traineeService:TraineeService) {
+  constructor(private snackBarService : SnackBarService, private router: Router, private signInService: SignInService,
+              private trainerService : TrainerService, private traineeService:TraineeService, private guardService : GuardService) {
     this.loginForm = new FormGroup({
       username: new FormControl('', Validators.required),
       password: new FormControl('', Validators.required),
     });
+
+    localStorage.clear();
   }
 
 
@@ -45,23 +49,30 @@ export class SignInComponent {
 
     this.signInService.userAuthentication(credential).subscribe(
       data => {
+
+
           if (this.selectedUserType === 'trainee') {
             this.traineeService.getTraineeProfile(credential.userName).subscribe(value => {
              let traineeProfile : TraineeDetailsDTO = value;
-              // console.log("value status "+ JSON.stringify(traineeProfile));
+                  this.guardService.setUserRole(2);
                   this.router.navigate(['/trainee'], { state: { traineeProfile } });
             },error => {
               this.snackBarService.openSnackBar("No Trainee with that username",2000);
             })
-          } else if (this.selectedUserType === 'trainer') {
+          }
+
+
+          else if (this.selectedUserType === 'trainer') {
             this.trainerService.getTrainerProfile(credential.userName).subscribe(value => {
                 let trainerProfile : TrainerDetailsDTO = value;
+                this.guardService.setUserRole(1);
                 this.router.navigate(['/trainer'], { state: { trainerProfile } });
             }, error => {
               this.snackBarService.openSnackBar("No Trainer with that username",2000);
             })
           }
       },
+
       error => {
         this.snackBarService.openSnackBar("Bad Credentials",2000);
       }
